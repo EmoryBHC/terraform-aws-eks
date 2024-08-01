@@ -83,7 +83,7 @@ variable "cluster_endpoint_public_access_cidrs" {
 variable "cluster_ip_family" {
   description = "The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`. You can only specify an IP family when you create a cluster, changing this value will force a new cluster to be created"
   type        = string
-  default     = null
+  default     = "ipv4"
 }
 
 variable "cluster_service_ipv4_cidr" {
@@ -134,6 +134,12 @@ variable "cluster_timeouts" {
   description = "Create, update, and delete timeout configurations for the cluster"
   type        = map(string)
   default     = {}
+}
+
+variable "bootstrap_self_managed_addons" {
+  description = "Indicates whether or not to bootstrap self-managed addons after the cluster has been created"
+  type        = bool
+  default     = null
 }
 
 ################################################################################
@@ -376,6 +382,12 @@ variable "node_security_group_tags" {
   default     = {}
 }
 
+variable "enable_efa_support" {
+  description = "Determines whether to enable Elastic Fabric Adapter (EFA) support"
+  type        = bool
+  default     = false
+}
+
 ################################################################################
 # IRSA
 ################################################################################
@@ -493,7 +505,7 @@ variable "cluster_encryption_policy_tags" {
 }
 
 variable "dataplane_wait_duration" {
-  description = "Duration to wait after the EKS cluster has become active before creating the dataplane components (EKS managed nodegroup(s), self-managed nodegroup(s), Fargate profile(s))"
+  description = "Duration to wait after the EKS cluster has become active before creating the dataplane components (EKS managed node group(s), self-managed node group(s), Fargate profile(s))"
   type        = string
   default     = "30s"
 }

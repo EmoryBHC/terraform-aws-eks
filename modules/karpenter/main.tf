@@ -383,6 +383,47 @@ data "aws_iam_policy_document" "controller" {
     resources = ["arn:${local.partition}:eks:${local.region}:${local.account_id}:cluster/${var.cluster_name}"]
     actions   = ["eks:DescribeCluster"]
   }
+
+  dynamic "statement" {
+    for_each = var.iam_policy_statements
+
+    content {
+      sid           = try(statement.value.sid, null)
+      actions       = try(statement.value.actions, null)
+      not_actions   = try(statement.value.not_actions, null)
+      effect        = try(statement.value.effect, null)
+      resources     = try(statement.value.resources, null)
+      not_resources = try(statement.value.not_resources, null)
+
+      dynamic "principals" {
+        for_each = try(statement.value.principals, [])
+
+        content {
+          type        = principals.value.type
+          identifiers = principals.value.identifiers
+        }
+      }
+
+      dynamic "not_principals" {
+        for_each = try(statement.value.not_principals, [])
+
+        content {
+          type        = not_principals.value.type
+          identifiers = not_principals.value.identifiers
+        }
+      }
+
+      dynamic "condition" {
+        for_each = try(statement.value.conditions, [])
+
+        content {
+          test     = condition.value.test
+          values   = condition.value.values
+          variable = condition.value.variable
+        }
+      }
+    }
+  }
 }
 
 resource "aws_iam_policy" "controller" {
@@ -409,6 +450,21 @@ resource "aws_iam_role_policy_attachment" "controller_additional" {
 
   role       = aws_iam_role.controller[0].name
   policy_arn = each.value
+}
+
+################################################################################
+# Pod Identity Association
+################################################################################
+
+resource "aws_eks_pod_identity_association" "karpenter" {
+  count = local.create_iam_role && var.enable_pod_identity && var.create_pod_identity_association ? 1 : 0
+
+  cluster_name    = var.cluster_name
+  namespace       = var.namespace
+  service_account = var.service_account
+  role_arn        = aws_iam_role.controller[0].arn
+
+  tags = var.tags
 }
 
 ################################################################################
@@ -446,6 +502,27 @@ data "aws_iam_policy_document" "queue" {
       identifiers = [
         "events.amazonaws.com",
         "sqs.amazonaws.com",
+      ]
+    }
+  }
+  statement {
+    sid    = "DenyHTTP"
+    effect = "Deny"
+    actions = [
+      "sqs:*"
+    ]
+    resources = [aws_sqs_queue.this[0].arn]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SecureTransport"
+      values = [
+        "false"
+      ]
+    }
+    principals {
+      type = "*"
+      identifiers = [
+        "*"
       ]
     }
   }
@@ -530,7 +607,13 @@ locals {
 
   node_iam_role_name          = coalesce(var.node_iam_role_name, "Karpenter-${var.cluster_name}")
   node_iam_role_policy_prefix = "arn:${local.partition}:iam::aws:policy"
-  cni_policy                  = var.cluster_ip_family == "ipv6" ? "arn:${local.partition}:iam::${local.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.node_iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+
+  ipv4_cni_policy = { for k, v in {
+    AmazonEKS_CNI_Policy = "${local.node_iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+  } : k => v if var.node_iam_role_attach_cni_policy && var.cluster_ip_family == "ipv4" }
+  ipv6_cni_policy = { for k, v in {
+    AmazonEKS_CNI_IPv6_Policy = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy"
+  } : k => v if var.node_iam_role_attach_cni_policy && var.cluster_ip_family == "ipv6" }
 }
 
 data "aws_iam_policy_document" "node_assume_role" {
@@ -565,11 +648,14 @@ resource "aws_iam_role" "node" {
 
 # Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
 resource "aws_iam_role_policy_attachment" "node" {
-  for_each = { for k, v in toset(compact([
-    "${local.node_iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy",
-    "${local.node_iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly",
-    var.node_iam_role_attach_cni_policy ? local.cni_policy : "",
-  ])) : k => v if local.create_node_iam_role }
+  for_each = { for k, v in merge(
+    {
+      AmazonEKSWorkerNodePolicy          = "${local.node_iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
+      AmazonEC2ContainerRegistryReadOnly = "${local.node_iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
+    },
+    local.ipv4_cni_policy,
+    local.ipv6_cni_policy
+  ) : k => v if local.create_node_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.node[0].name

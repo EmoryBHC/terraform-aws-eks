@@ -92,6 +92,12 @@ variable "iam_policy_description" {
   default     = "Karpenter controller IAM policy"
 }
 
+variable "iam_policy_statements" {
+  description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed"
+  type        = any
+  default     = []
+}
+
 variable "iam_role_policies" {
   description = "Policies to attach to the IAM role in `{'static_name' = 'policy_arn'}` format"
   type        = map(string)
@@ -136,6 +142,28 @@ variable "irsa_assume_role_condition_test" {
   description = "Name of the [IAM condition operator](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition_operators.html) to evaluate when assuming the role"
   type        = string
   default     = "StringEquals"
+}
+
+################################################################################
+# Pod Identity Association
+################################################################################
+# TODO - Change default to `true` at next breaking change
+variable "create_pod_identity_association" {
+  description = "Determines whether to create pod identity association"
+  type        = bool
+  default     = false
+}
+
+variable "namespace" {
+  description = "Namespace to associate with the Karpenter Pod Identity"
+  type        = string
+  default     = "kube-system"
+}
+
+variable "service_account" {
+  description = "Service account to associate with the Karpenter Pod Identity"
+  type        = string
+  default     = "karpenter"
 }
 
 ################################################################################
@@ -185,7 +213,7 @@ variable "create_node_iam_role" {
 variable "cluster_ip_family" {
   description = "The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`. Note: If `ipv6` is specified, the `AmazonEKS_CNI_IPv6_Policy` must exist in the account. This policy is created by the EKS module with `create_cni_ipv6_iam_policy = true`"
   type        = string
-  default     = null
+  default     = "ipv4"
 }
 
 variable "node_iam_role_arn" {

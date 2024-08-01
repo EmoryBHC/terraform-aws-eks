@@ -1,15 +1,15 @@
 # Karpenter Example
 
-Configuration in this directory creates an AWS EKS cluster with [Karpenter](https://karpenter.sh/) provisioned for managing compute resource scaling. In the example provided, Karpenter is running on EKS Fargate yet Karpenter is providing compute in the form of EC2 instances.
+Configuration in this directory creates an AWS EKS cluster with [Karpenter](https://karpenter.sh/) provisioned for managing compute resource scaling. In the example provided, Karpenter is provisioned on top of an EKS Managed Node Group.
 
 ## Usage
 
-To run this example you need to execute:
+To provision the provided configurations you need to execute:
 
 ```bash
 $ terraform init
 $ terraform plan
-$ terraform apply
+$ terraform apply --auto-approve
 ```
 
 Once the cluster is up and running, you can check that Karpenter is functioning as intended with the following command:
@@ -22,10 +22,47 @@ aws eks --region eu-west-1 update-kubeconfig --name ex-karpenter
 kubectl scale deployment inflate --replicas 5
 
 # You can watch Karpenter's controller logs with
-kubectl logs -f -n karpenter -l app.kubernetes.io/name=karpenter -c controller
+kubectl logs -f -n kube-system -l app.kubernetes.io/name=karpenter -c controller
 ```
 
-You should see a new node named `karpenter.sh/provisioner-name/default` eventually come up in the console; this was provisioned by Karpenter in response to the scaled deployment above.
+Validate if the Amazon EKS Addons Pods are running in the Managed Node Group and the `inflate` application Pods are running on Karpenter provisioned Nodes.
+
+```bash
+kubectl get nodes -L karpenter.sh/registered
+```
+
+```text
+NAME                                        STATUS   ROLES    AGE    VERSION               REGISTERED
+ip-10-0-16-155.eu-west-1.compute.internal   Ready    <none>   100s   v1.29.3-eks-ae9a62a   true
+ip-10-0-3-23.eu-west-1.compute.internal     Ready    <none>   6m1s   v1.29.3-eks-ae9a62a
+ip-10-0-41-2.eu-west-1.compute.internal     Ready    <none>   6m3s   v1.29.3-eks-ae9a62a
+```
+
+```sh
+kubectl get pods -A -o custom-columns=NAME:.metadata.name,NODE:.spec.nodeName
+```
+
+```text
+NAME                           NODE
+inflate-75d744d4c6-nqwz8       ip-10-0-16-155.eu-west-1.compute.internal
+inflate-75d744d4c6-nrqnn       ip-10-0-16-155.eu-west-1.compute.internal
+inflate-75d744d4c6-sp4dx       ip-10-0-16-155.eu-west-1.compute.internal
+inflate-75d744d4c6-xqzd9       ip-10-0-16-155.eu-west-1.compute.internal
+inflate-75d744d4c6-xr6p5       ip-10-0-16-155.eu-west-1.compute.internal
+aws-node-mnn7r                 ip-10-0-3-23.eu-west-1.compute.internal
+aws-node-rkmvm                 ip-10-0-16-155.eu-west-1.compute.internal
+aws-node-s4slh                 ip-10-0-41-2.eu-west-1.compute.internal
+coredns-68bd859788-7rcfq       ip-10-0-3-23.eu-west-1.compute.internal
+coredns-68bd859788-l78hw       ip-10-0-41-2.eu-west-1.compute.internal
+eks-pod-identity-agent-gbx8l   ip-10-0-41-2.eu-west-1.compute.internal
+eks-pod-identity-agent-s7vt7   ip-10-0-16-155.eu-west-1.compute.internal
+eks-pod-identity-agent-xwgqw   ip-10-0-3-23.eu-west-1.compute.internal
+karpenter-79f59bdfdc-9q5ff     ip-10-0-41-2.eu-west-1.compute.internal
+karpenter-79f59bdfdc-cxvhr     ip-10-0-3-23.eu-west-1.compute.internal
+kube-proxy-7crbl               ip-10-0-41-2.eu-west-1.compute.internal
+kube-proxy-jtzds               ip-10-0-16-155.eu-west-1.compute.internal
+kube-proxy-sm42c               ip-10-0-3-23.eu-west-1.compute.internal
+```
 
 ### Tear Down & Clean-Up
 
@@ -41,10 +78,7 @@ kubectl delete node -l karpenter.sh/provisioner-name=default
 2. Remove the resources created by Terraform
 
 ```bash
-# Necessary to avoid removing Terraform's permissions too soon before its finished
-# cleaning up the resources it deployed inside the cluster
-terraform state rm 'module.eks.aws_eks_access_entry.this["cluster_creator_admin"]' || true
-terraform destroy
+terraform destroy --auto-approve
 ```
 
 Note that this example may create resources which cost money. Run `terraform destroy` when you don't need these resources.
@@ -54,8 +88,8 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.34 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.58 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.7 |
 | <a name="requirement_kubectl"></a> [kubectl](#requirement\_kubectl) | >= 2.0 |
 
@@ -63,8 +97,8 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.34 |
-| <a name="provider_aws.virginia"></a> [aws.virginia](#provider\_aws.virginia) | >= 5.34 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.58 |
+| <a name="provider_aws.virginia"></a> [aws.virginia](#provider\_aws.virginia) | >= 5.58 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.7 |
 | <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | >= 2.0 |
 
@@ -108,12 +142,14 @@ No inputs.
 | <a name="output_cluster_iam_role_unique_id"></a> [cluster\_iam\_role\_unique\_id](#output\_cluster\_iam\_role\_unique\_id) | Stable and unique string identifying the IAM role |
 | <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | The ID of the EKS cluster. Note: currently a value is returned only for local EKS clusters created on Outposts |
 | <a name="output_cluster_identity_providers"></a> [cluster\_identity\_providers](#output\_cluster\_identity\_providers) | Map of attribute maps for all EKS identity providers enabled |
+| <a name="output_cluster_ip_family"></a> [cluster\_ip\_family](#output\_cluster\_ip\_family) | The IP family used by the cluster (e.g. `ipv4` or `ipv6`) |
 | <a name="output_cluster_name"></a> [cluster\_name](#output\_cluster\_name) | The name of the EKS cluster |
 | <a name="output_cluster_oidc_issuer_url"></a> [cluster\_oidc\_issuer\_url](#output\_cluster\_oidc\_issuer\_url) | The URL on the EKS cluster for the OpenID Connect identity provider |
 | <a name="output_cluster_platform_version"></a> [cluster\_platform\_version](#output\_cluster\_platform\_version) | Platform version for the cluster |
 | <a name="output_cluster_primary_security_group_id"></a> [cluster\_primary\_security\_group\_id](#output\_cluster\_primary\_security\_group\_id) | Cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication. Referred to as 'Cluster security group' in the EKS console |
 | <a name="output_cluster_security_group_arn"></a> [cluster\_security\_group\_arn](#output\_cluster\_security\_group\_arn) | Amazon Resource Name (ARN) of the cluster security group |
 | <a name="output_cluster_security_group_id"></a> [cluster\_security\_group\_id](#output\_cluster\_security\_group\_id) | ID of the cluster security group |
+| <a name="output_cluster_service_cidr"></a> [cluster\_service\_cidr](#output\_cluster\_service\_cidr) | The CIDR block where Kubernetes pod and service IP addresses are assigned from |
 | <a name="output_cluster_status"></a> [cluster\_status](#output\_cluster\_status) | Status of the EKS cluster. One of `CREATING`, `ACTIVE`, `DELETING`, `FAILED` |
 | <a name="output_cluster_tls_certificate_sha1_fingerprint"></a> [cluster\_tls\_certificate\_sha1\_fingerprint](#output\_cluster\_tls\_certificate\_sha1\_fingerprint) | The SHA1 fingerprint of the public key of the cluster's certificate |
 | <a name="output_eks_managed_node_groups"></a> [eks\_managed\_node\_groups](#output\_eks\_managed\_node\_groups) | Map of attribute maps for all EKS managed node groups created |

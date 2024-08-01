@@ -2,6 +2,209 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.20.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.19.0...v20.20.0) (2024-07-19)
+
+
+### Features
+
+* Enable support for ignore_failed_scaling_activities ([#3104](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3104)) ([532226e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/532226e64e61328b25426cabc27e4009e085154f))
+
+## [20.19.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.18.0...v20.19.0) (2024-07-15)
+
+
+### Features
+
+* Pass the `primary_ipv6` argument to the AWS provider. ([#3098](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3098)) ([e1bb8b6](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e1bb8b66617299c6d9972139b1f9355322e7801e))
+
+## [20.18.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.17.2...v20.18.0) (2024-07-15)
+
+
+### Features
+
+* Support `bootstrap_self_managed_addons` ([#3099](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3099)) ([af88e7d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/af88e7d2f835b3dfde242157ba3dd98b749bbc0b))
+
+## [20.17.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.17.1...v20.17.2) (2024-07-05)
+
+
+### Bug Fixes
+
+* Revert [#3058](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3058) - fix: Invoke aws_iam_session_context data source only when required ([#3092](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3092)) ([93ffdfc](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/93ffdfc6fa380cb0b73df7380e7e62302ebb1a98))
+
+## [20.17.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.17.0...v20.17.1) (2024-07-05)
+
+
+### Bug Fixes
+
+* Invoke `aws_iam_session_context` data source only when required ([#3058](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3058)) ([f02df92](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f02df92b66a9776a689a2baf39e7474f3b703d89))
+
+## [20.17.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.16.0...v20.17.0) (2024-07-05)
+
+
+### Features
+
+* Add support for ML capacity block reservations with EKS managed node group(s) ([#3091](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3091)) ([ae3379e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ae3379e92429ed842f1c1017fd6ee59ec9f297d4))
+
+## [20.16.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.15.0...v20.16.0) (2024-07-02)
+
+
+### Features
+
+* Add support for custom IAM role policy ([#3087](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3087)) ([1604c6c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/1604c6cdc8cedcd47b7357c5068dc11d0ed1d7e5))
+
+## [20.15.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.14.0...v20.15.0) (2024-06-27)
+
+
+### Features
+
+* Deny HTTP on Karpenter SQS policy ([#3080](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3080)) ([f6e071c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f6e071cd99faa56b988b63051b22df260e929b03))
+
+## [20.14.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.13.1...v20.14.0) (2024-06-13)
+
+
+### Features
+
+* Require users to supply OS via `ami_type` and not via `platform` which is unable to distinquish between the number of variants supported today ([#3068](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3068)) ([ef657bf](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ef657bfcb51296841f14cf514ffefb1066f810ee))
+
+## [20.13.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.13.0...v20.13.1) (2024-06-04)
+
+
+### Bug Fixes
+
+* Correct syntax for correctly ignoring `bootstrap_cluster_creator_admin_permissions` and not all of `access_config` ([#3056](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3056)) ([1e31929](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/1e319290445a6eb50b53dfb89c9ae9f2949d38d7))
+
+## [20.13.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.12.0...v20.13.0) (2024-05-31)
+
+
+### Features
+
+* Starting with `1.30`, do not use the cluster OIDC issuer URL by default in the identity provider config ([#3055](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3055)) ([00f076a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/00f076ada4cd78c5c34b8be6e8eba44b628b629a))
+
+## [20.12.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.11.1...v20.12.0) (2024-05-28)
+
+
+### Features
+
+* Support additional cluster DNS IPs with Bottlerocket based AMIs ([#3051](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3051)) ([541dbb2](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/541dbb29f12bb763a34b32acdaea9cea12d7f543))
+
+## [20.11.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.11.0...v20.11.1) (2024-05-21)
+
+
+### Bug Fixes
+
+* Ignore changes to `bootstrap_cluster_creator_admin_permissions` which is disabled by default  ([#3042](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3042)) ([c65d308](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c65d3085037d9c1c87f4fd3a5be1ca1d732dbf7a))
+
+## [20.11.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.10.0...v20.11.0) (2024-05-16)
+
+
+### Features
+
+* Add `SourceArn` condition to Fargate profile trust policy ([#3039](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3039)) ([a070d7b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/a070d7b2bd92866b91e0963a0f819eec9839ed03))
+
+## [20.10.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.9.0...v20.10.0) (2024-05-09)
+
+
+### Features
+
+* Add support for Pod Identity assocation on Karpenter sub-module ([#3031](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3031)) ([cfcaf27](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/cfcaf27ac78278916ebf3d51dc64a20fe0d7bf01))
+
+## [20.9.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.5...v20.9.0) (2024-05-08)
+
+
+### Features
+
+* Propagate `ami_type` to self-managed node group; allow using `ami_type` only ([#3030](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3030)) ([74d3918](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/74d39187d855932dd976da6180eda42dcfe09873))
+
+## [20.8.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.4...v20.8.5) (2024-04-08)
+
+
+### Bug Fixes
+
+* Forces cluster outputs to wait until access entries are complete ([#3000](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3000)) ([e2a39c0](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e2a39c0f261d776e4e18a650aa9068429c4f5ef4))
+
+## [20.8.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.3...v20.8.4) (2024-03-21)
+
+
+### Bug Fixes
+
+* Pass nodeadm user data variables from root module down to nodegroup sub-modules ([#2981](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2981)) ([84effa0](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/84effa0e30f64ba2fceb7f89c2a822e92f1ee1ea))
+
+## [20.8.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.2...v20.8.3) (2024-03-12)
+
+
+### Bug Fixes
+
+* Ensure the correct service CIDR and IP family is used in the rendered user data ([#2963](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2963)) ([aeb9f0c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/aeb9f0c990b259320a6c3e5ff93be3f064bb9238))
+
+## [20.8.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.1...v20.8.2) (2024-03-11)
+
+
+### Bug Fixes
+
+* Ensure a default `ip_family` value is provided to guarantee a CNI policy is attached to nodes ([#2967](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2967)) ([29dcca3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/29dcca335d80e248c57b8efa2c36aaef2e1b1bd2))
+
+## [20.8.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.0...v20.8.1) (2024-03-10)
+
+
+### Bug Fixes
+
+* Do not attach policy if Karpenter node role is not created by module ([#2964](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2964)) ([3ad19d7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3ad19d7435f34600e4872fd131e155583e498cd9))
+
+## [20.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.7.0...v20.8.0) (2024-03-10)
+
+
+### Features
+
+* Replace the use of `toset()` with static keys for node IAM role policy attachment ([#2962](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2962)) ([57f5130](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/57f5130132ca11fd3e478a61a8fc082a929540c2))
+
+## [20.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.6.0...v20.7.0) (2024-03-09)
+
+
+### Features
+
+* Add supprot for creating placement group for managed node group ([#2959](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2959)) ([3031631](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/30316312f33fe7fd09faf86fdb1b01ab2a377b2a))
+
+## [20.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.5.3...v20.6.0) (2024-03-09)
+
+
+### Features
+
+* Add support for tracking latest AMI release version on managed nodegroups ([#2951](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2951)) ([393da7e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/393da7ec0ed158cf783356ab10959d91430c1d80))
+
+## [20.5.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.5.2...v20.5.3) (2024-03-08)
+
+
+### Bug Fixes
+
+* Update AWS provider version to support `AL2023_*` AMI types; ensure AL2023 user data receives cluster service CIDR ([#2960](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2960)) ([dfe4114](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/dfe41141c2385db783d97494792c8f2e227cfc7c))
+
+## [20.5.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.5.1...v20.5.2) (2024-03-07)
+
+
+### Bug Fixes
+
+* Use the `launch_template_tags` on the launch template ([#2957](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2957)) ([0ed32d7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0ed32d7b291513f34775ca85b0aa33da085d09fa))
+
+## [20.5.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.5.0...v20.5.1) (2024-03-07)
+
+
+### Bug Fixes
+
+* Update CI workflow versions to remove deprecated runtime warnings ([#2956](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2956)) ([d14cc92](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/d14cc925c450451b023407d05a2516d7682d1617))
+
+## [20.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.4.0...v20.5.0) (2024-03-01)
+
+
+### Features
+
+* Add support for AL2023 `nodeadm` user data ([#2942](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2942)) ([7c99bb1](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7c99bb19cdbf1eb4f4543f9b8e6d29c3a6734a55))
+
+## [20.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.3.0...v20.4.0) (2024-02-23)
+
+
+### Features
+
+* Add support for enabling EFA resources ([#2936](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2936)) ([7f472ec](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7f472ec660049d4ca85de039cb3015c1b1d12fb8))
+
 ## [20.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.2.2...v20.3.0) (2024-02-21)
 
 
